@@ -1,0 +1,499 @@
+open -> used to create a new file with given extention
+
+x -> x is the symbol in py to create a new file
+w -> can create and also push data into the file
+r (before path) -> indicate it as raw data
+r (in place of x) ->reading mode
+a -> appends the data to existing data
+
+close() -> close the above operations
+write() -> push the data into the file even if file is not created it will create it
+.xlsx ->excel file
+.csv -> excel file with one sheet (comma seperated values)
+.docx -> word document
+
+unicode error
+	
+	it may consider the path as \desktop or etc.. as \t or \n etc..
+to avoid this we use 'r'.
+
+a=open(r"C:\Users\prake\Desktop\dsk folders\python\example.txt",'w')
+a.write("Prakeerthi\n")
+a.write("\tAIML 2025")
+a.close()
+
+writelines() -> appends the given list into the file
+a=open(r"C:\Users\prake\Desktop\dsk folders\python\example.txt",'w')
+p=['hi\n','Hello\n','Keerthi\n']
+a.writelines(p)
+a.close()
+
+hi
+Hello
+Keerthi
+
+using r mode
+
+a=open(r"C:\Users\prake\Desktop\dsk folders\python\example.txt",'r')
+f=a.read()
+print(f)
+a.close()
+
+hi
+Hello
+Keerthi
+Prakeerthi
+Keerthi
+
+f
+'hi\nHello\nKeerthi\nPrakeerthi\nKeerthi'
+
+readlines() -> reads all lines together
+
+a=open(r"C:\Users\prake\Desktop\dsk folders\python\example.txt",'r')
+f=a.readlines()
+z=[]
+for i in f:
+    z.append(i) #appends data to an empty list to access elements seperately
+print(z)
+a.close()
+
+['hi\n', 'Hello\n', 'Keerthi\n', 'Prakeerthi\n', 'Keerthi']
+
+-----------------------------------------------------------------------------
+operations on excel data
+
+a=open(r"C:\Users\prake\Downloads\data.csv",'r')
+s=a.readlines()
+d=[]
+for i in s:
+    d.append(i)
+a.close()
+aec=0
+acet=0
+acoe=0
+
+for i in d:
+    if 'a9' in i or 'A9' in i and 'MH' not in i:
+        aec+=1
+    elif 'p3' in i or 'P3' in i:
+        acet+=1
+    elif 'mh' in i or 'MH' in i:
+        acoe+=1
+print(aec)
+print(acet)
+print(acoe)
+
+1
+56
+142
+
+------------------------------------------------------------------------------
+
+Deletion of a file:
+
+need to import os from lib
+
+os.mkdir ->create or make a directory or folder
+os.rmdir -> deletes the empty folder
+os.remove ->deletes the file given
+
+import os
+os.mkdir(r"C:\Users\prake\Desktop\dsk folders\python\sample")
+os.rmdir(r"C:\Users\prake\Desktop\dsk folders\python\sample")
+os.remove(r"C:\Users\prake\Desktop\AIML\example.txt")
+
+LINE GRAPH:
+-------------------
+importing matplot li we use a command called
+	import matplotlib.pyplot as plt
+
+here we have given an alias name for matplotlib.pyplot as plt
+ in order to short the name
+
+import matplotlib.pyplot as plt
+x=[1,2,3,4,5]
+y=[12,13,11,14,15]
+plt.plot(x,y,c='purple',linewidth=1,linestyle='dashed',marker='*')
+plt.title('subject vs marks')
+plt.xlabel('subject')
+plt.ylabel('marks')
+plt.show()
+
+here plt.show displays the graph same as print statement
+plt.title(' ----- ') 	--> gives the heading or name to the graph
+plt.xlabel('---') and plt.ylabel('---')		--> give heading to x and y
+c='purple' 		--> is command where we can change colur of graph
+		--> 	b->blue
+		     	r->red
+			g->green
+			y->yellow
+	remaining for all colours we need to give entire colour name
+	linestyle gives the graph styles
+
+marker='*' it helps to mark the exact point on the graph with given symbol
+
+to change the marker color we need to add
+
+plt.plot(x,y,linewidth=2,linestyle='dashed',marker='*',color='pink',mfc='b',mec='b')
+	mfc  --> marker face color
+	mec   -->marker edge color
+
+legend command:
+
+import matplotlib.pyplot as plt
+x=[1,2,3,4,5]
+y=[12,13,11,14,15]
+p=[12,11,15,11,13]
+plt.plot(x,y,c='purple',linewidth=1,linestyle='dashed',marker='*',mfc='y',mec='y',label='marks')
+plt.plot(x,p,linewidth=2,linestyle='dashed',marker='*',color='pink',mfc='b',mec='b',label='points')
+plt.title('subject vs marks')
+plt.xlabel('subject')
+plt.ylabel('marks')
+plt.legend()
+plt.show()
+
+displays the graph details
+
+
+SCATTER GRAPH:
+------------------------
+
+import matplotlib.pyplot as plt
+x=[1,2,3,4,5]
+y=[12,13,11,14,15]
+
+plt.scatter(x,y,marker='*',color='purple')
+
+plt.title('subject vs marks')
+plt.xlabel('subject')
+plt.ylabel('marks')
+plt.show()
+
+BAR GRAPH:
+-------------------
+
+import matplotlib.pyplot as plt
+x=[1,2,3,4]
+y=[21,38,39,27]
+s=['2020','2021','2022','2023']
+plt.bar(x,y,tick_label=s,color='purple',label='cost')
+plt.legend()
+plt.show()
+
+plt.bar -->vertical graph
+plt.barh  -->horizontal graph
+
+SPLINTING AREA:
+---------------------------
+
+	dividing our work area into parts
+
+import matplotlib.pyplot as plt
+x=[1,2,3,4,5]
+y=[12,13,11,14,15]
+p=[12,11,15,11,13]
+
+plt.subplot(2,1,1)  ##in 1 workarea divided into 2 halfs and in 1st half...
+plt.plot(x,y)
+
+plt.subplot(2,1,2)  ##in 1 workarea divided into 2 halfs and in 2nd half...
+plt.plot(x,p)
+
+plt.show()
+
+PIE CHART:
+----------------
+
+import matplotlib.pyplot as plt
+x=[5,8,9,6]
+s=['java','cpp','c','python']
+c=['pink','blue','red','green']
+plt.pie(x,labels=s,startangle=90,explode=(0.2,0,0,0),autopct='%1.2f',colors=c)
+plt.legend()
+plt.savefig(r'C:\Users\prake\Desktop\AIML\bar1.jpg')
+plt.show()
+
+here startangle 90 means the chart starts from 90 degrees
+explode means , it highlits the part we want to by seperating a bit form total chart
+autopct='%1.2f' means it calculates percentage dutomatically and labels it
+colors -->will set our customized colors
+savefig  --> saves the figure in given location
+
+------------------------------------------------------------------------------------------------------
+
+Data extraction using a csv file named "diabetes_data_upload.csv"...
+
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+a.close()
+c=[]
+for i in b:
+    c.append(i.split(','))
+d={}
+ct=0
+pev=0
+nev=0
+for i in c:# to exclude 1st col c[1:]
+    if i[0]>='40':
+        ct+=1
+        if i[-1] in 'Negative\n':#having diabatis or not
+            nev+=1
+        else:
+            pev+=1
+print(ct)
+print(pev)
+print(nev)
+##output: 45
+
+--------------------------------------------------------------------------------------------------------
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+a.close()
+c=[]
+for i in b:
+    c.append(i.split(','))
+d={}
+for i in c[1:]:
+    if i[1] not in d.keys():
+        d[i[1]]={}
+        if i[-1] not in d[i[1]].keys():
+            d[i[1]][i[-1]]=1
+        else:
+            d[i[1]][i[-1]]+=1
+    else:
+         if i[-1] not in d[i[1]].keys():
+            d[i[1]][i[-1]]=1
+         else:
+            d[i[1]][i[-1]]+=1
+for i in d:
+    print(i,d[i])
+        
+f=0
+m=0
+fpve=0
+fnev=0
+mpve=0
+mnev=0
+for i in c:# to exclude 1st col c[1:]
+        if i[1] in 'Female':
+            f+=1
+            if i[-1] in 'Positive\n':
+                fpve+=1
+            else:
+                fnev+=1
+        else:
+            m+=1
+            if i[-1] in 'Positive\n':
+                mpve+=1
+            else:
+                mnev+=1
+print("Female",f)
+print("Positive",fpve)
+print("Negative",fnev)
+print("Male",m)
+print("Positive",mpve)
+print("Negative",mnev)
+
+
+Male {'Positive\n': 147, 'Negative\n': 181}
+Female {'Positive\n': 173, 'Negative\n': 19}
+
+-------------------------------------------------------------------------------------------------------
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+a.close()
+c=[]
+for i in b:
+    c.append(i.split(','))
+d={}
+for i in c:
+    if i[1] not in d.keys():
+        d[i[1]]=1
+    else:
+        d[i[1]]+=1
+print(d)
+
+##output:
+##{'Gender': 1, 'Male': 328, 'Female': 192}
+
+-------------------------------------------------------------------------------------------------------
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+a.close()
+c=[]
+for i in b:
+    c.append(i.split(','))
+d={}
+for i in c:
+    if i[-1] not in d.keys():
+        d[i[-1][:-1]]=1
+    else:
+        d[i[-1][:-1]]+=1
+print(d)
+
+ output:
+{'class\n': 1, 'Positive\n': 320, 'Negative\n': 200}
+{'class': 1, 'Positive': 1, 'Negative': 1}  to remove \n keep [:-1]
+
+------------------------------------------------------------------------------------------------------
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+c=[]
+for i in b:
+    c.append(i)
+a.close()
+pev=0
+nev=0
+for i in c:
+    if 'Positive' in i:
+        pev+=1
+    else:
+        nev+=1
+print(pev)
+print(nev)
+
+-----------------------------------------------------------------------------------------------------
+
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+a.close()
+s=[]
+for i in b:
+    s.append(i.split(','))
+
+for i in range(len(s)):
+    for j in range(len(s[i])):
+        if s[i][j]=='':
+            print('row is:{},column is:{}'.format(i,j))
+
+output:
+row is:7,column is:5
+row is:8,column is:13
+row is:11,column is:5
+row is:22,column is:8
+
+-----------------------------------------------------------------------------------------------------
+a=open(r'C:\Users\prake\Desktop\AIML\diabetes_data_upload.csv','r')
+b=a.readlines()
+a.close()
+s=[]
+for i in b:
+    s.append(i.split(','))
+w={}
+for i in range(len(s[0])):
+    w[i]=0
+print(w)
+for i in s:
+    for j in range(len(i)):
+        if i[j]=='':
+               w[j]+=1
+print(w)
+
+output:
+{0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0,
+	 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0}
+{0: 0, 1: 0, 2: 1, 3: 2, 4: 0, 5: 0, 6: 0, 7: 2, 8: 1, 9: 0, 10: 0,
+	 11: 0, 12: 0, 13: 0, 14: 1, 15: 0, 16: 0}
+
+--------------------------------------------------------------------------------
+
+ Brand and country...
+a=open(r"C:\Users\prake\Desktop\AIML\cars_country.csv",'r')
+b=a.readlines()
+a.close()
+c=[]
+for i in b:
+    c.append(i.split(','))
+d={}
+for i in c[1:]:
+    if i[0] not in d.keys():
+        d[i[0]]={}
+        if i[-1] not in d[i[0]].keys():
+            d[i[0]][i[-1]]=1
+        else:
+            d[i[0]][i[-1]]+=1
+    else:
+        if i[-1] not in d[i[0]].keys():
+            d[i[0]][i[-1]]=1
+        else:
+            d[i[0]][i[-1]]+=1
+for i in d:
+    print(i,d[i])
+
+--------------------------------------------------------------------------------
+
+ Country and brand...
+a=open(r"C:\Users\prake\Desktop\AIML\cars_country.csv",'r')
+b=a.readlines()
+a.close()
+c=[]
+for i in b:
+    c.append(i.split(','))
+d={}
+for i in c[1:]:
+    if i[-1] not in d.keys():
+        d[i[-1]]={}
+        if i[0] not in d[i[-1]].keys():
+            d[i[-1]][i[0]]=1
+        else:
+            d[i[-1]][i[0]]+=1
+    else:
+        if i[0] not in d[i[-1]].keys():
+            d[i[-1]][i[0]]=1
+        else:
+            d[i[-1]][i[0]]+=1
+for i in d:
+    print(i,d[i])
+-------------------------------------------------------------------------------
+
+import matplotlib.pyplot as plt
+a=open(r"C:\Users\prake\Desktop\AIML\cars_country.csv",'r')
+s=a.readlines()
+a.close()
+c=[]
+for i in s:
+    c.append(i.split(','))
+d={}
+for i in c[1:]:
+    if i[-1] not in d.keys():
+             d[i[-1]]=1
+    else:
+             d[i[-1]]+=1
+x=[]
+y=[]
+for i in d:
+    x.append(i[:-1])
+for i in d:
+    y.append(d[i])
+
+plt.bar(x,y,color='purple')
+plt.savefig(r'C:\Users\prake\Desktop\AIML\figures\cars_country.jpg')
+plt.show()
+
+--------------------------------------------------------------------------------
+
+Random:
+----------
+
+	to use random we need to import random first ...it is a library
+
+1. random.random() --> Generates random float values
+2. random.uniform( _ , _) --> float values with in the range
+3. random.randint(_ , _) -->generates int values with in the range
+4. random.randrange(_ , _) -->generates int values with in the range
+5. random.randrange(_ , _ , _) -->generates int values within the range using step size
+
+These all are for unkown number by just giving a range....
+
+a=[3,4,1,2,6,7]
+1. random.sample(a,2) --> gives a saple number form a given list of elements.
+					here we can place any number for saying how many number should print at a time
+2. random.choice(a) --> only single element at a time
+3.random.shuffle(a) --> shuffles the total array or re arranges the array again.
+
+
+
+
+
+

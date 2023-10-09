@@ -1,0 +1,293 @@
+# Import necessary libraries: Pandas, NumPy, Matplotlib.
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1)a)i),ii) Loading and Inspecting Data
+
+# Load COVID-19 data from a CSV file using Pandas.
+data = pd.read_csv(r"C:\Users\prake\Desktop\AIML\public-covid-19-cases-canada.csv")
+
+# Print original data and perform initial data inspection
+
+# Display the original data loaded from the CSV file.
+print('Original data is --', data)
+
+# Display the column names of the dataset.
+print('The columns of the data set are:')
+print(data.columns)
+
+# Display key features of the dataset using describe() method.
+print('The key features of columns are:')
+print(data.describe())
+
+# Display the shape of the dataset (number of rows and columns).
+print('The shape of the data set is : ')
+print(data.shape)
+
+# Display the range of values (index) of the dataset.
+print('The range of values of the data set are: ')
+print(data.index)
+
+# Display the number of null values in each column using isna().sum().
+print('The number of useless symbols in each column are:')
+print(data.isna().sum())
+
+# Explanation: In this section, you load the COVID-19 data from a CSV file using Pandas. 
+# You then print the original data, column names, key features (such as mean, min, max), 
+# shape (number of rows and columns), index range, and the number of null values in each column.
+
+#1)a)iii potential insights
+infected_persons.plot(kind='bar',figsize=(10,6))
+plt.title('no of infected people for each age group')
+plt.xlabel('Age group')
+plt.ylabel('count')
+plt.show()
+
+sex_distribution = data['sex'].value_counts()
+plt.figure(figsize=(6, 6))
+plt.pie(sex_distribution, labels=sex_distribution.index, autopct='%1.1f%%', startangle=140, colors=['skyblue', 'lightcoral'])
+plt.title('Distribution of Sex in the Dataset')
+plt.axis('equal')
+plt.show()
+
+# Explanation: In this section, you're using Matplotlib to visualize potential insights from the data.
+# First, you're plotting a bar chart to show the distribution of infected people for each age group.
+# Then, you're calculating the distribution of sex values in the dataset and displaying it using a pie chart.
+
+# ----------------------------------------------------------------------------------------
+
+#1)b)i)ii)iii) removng/replacing null and not reported and reformmating age
+print('Filling all empty case_id columns with sequemce numbers')
+a=np.arange(1,50983)
+data['case_id']=a
+print('data set after replacing the null values with mode')
+data['has_travel_history'].fillna(data['has_travel_history'].mode()[0],inplace=True)
+data['locally_acquired'].fillna(data['locally_acquired'].mode()[0],inplace=True)
+
+print('data set after removing Not Reported values from age column of data set and replacing the below 18 years age group with 0-19 age group range :')
+data=data[data['age']!='Not Reported']
+def age_replace(value):
+    d={1:'0-19',2:'20-29',3:'30-39',4:'40-49',5:'50-59',6:'60-69',7:'70-79',8:'80-89',9:'90-100'}
+    if value<20:
+        return d[1]
+    elif value<30:
+        return d[2]
+    elif value<40:
+        return d[3]
+    elif value<50:
+        return d[4]
+    elif value<60:
+        return d[5]
+    elif value<70:
+        return d[6]
+    elif value<80:
+        return d[7]
+    elif value<90:
+        return d[8]
+    else:
+        return d[9]
+age=data['age']
+for i in age:
+    if '<' in i:
+        a=i[1: ]
+        b=age_replace(int(a))
+        age.replace(to_replace=i,value=b,inplace=True)
+    if (len(i)==1 or len(i)==2):
+        b=age_replace(int(i))
+        age.replace(to_replace=i,value=b,inplace=True)
+    if i=='10-19':
+        b=age_replace(10)
+        age.replace(to_replace=i,value=b,inplace=True)
+print('data after reformatting the single age values into range',data['age'])       
+print('data after sorting the age column :')
+data=data.sort_values(['age'])  
+print(data.head())
+    
+print('data set after replace the Not Reported sex values in data set :')
+data['sex'].replace(to_replace='Not Reported',value=data['sex'].mode()[0],inplace=True)
+
+infected_persons=data.groupby('age')['provincial_case_id'].count()
+print(infected_persons) 
+
+# Explanation: In this section, you are performing data cleaning and transformation operations.
+# You're filling missing case_id values with a sequence of numbers, handling missing values
+# in certain columns using the mode, removing "Not Reported" values from the age column,
+# reformatting age values into specific ranges, sorting the data based on age,
+# replacing "Not Reported" sex values with the mode of the sex column, and then
+# counting the number of infected persons by age.
+
+# ----------------------------------------------------------------------------------------
+
+#1)c  Save the cleaned and reformatted dataset into a new .csv file.
+data.to_csv(r'C:\Users\prake\Desktop\AIML\public-covid-19-cases-canada.csv')
+#===================================================================================
+
+##question 2)i,ii,iii
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import pandas as pd
+
+#object class name
+Base = declarative_base()
+class CovidCase(Base):
+    _tablename_ = 'covid_cases'
+    case_id = Column(Integer, primary_key=True)
+    provincial_case_id=Column(Integer)
+    age = Column(String)
+    sex = Column(String)
+    health_region = Column(String)
+    province = Column(String)
+    country = Column(String)
+    date_report = Column(String)
+    report_week = Column(String)
+    has_travel_history = Column(String)
+    locally_acquired = Column(String)
+    case_source = Column(String)
+
+#connecting to sqlite database
+table1 = create_engine('sqlite:///covid_data.db')
+
+# Create tables
+Base.metadata.create_all(table1)
+
+# Reading the csv file as dataframe
+df=pd.read_csv(r'C:\Users\prake\Desktop\AIML\public-covid-19-cases-canada.csv')
+
+# Creating a session to interact with database
+Session = sessionmaker(bind=table1)
+session = Session()
+
+# Iterate through DataFrame rows and insert data into the database
+df.to_sql('covid_cases', con=table1, if_exists='append', index=False)
+
+# Commit the changes and close the session
+session.commit()
+session.close()
+
+df=pd.DataFrame(data)
+df['month']=pd.to_datetime(df['date_report']).dt.month
+no_female_male_infectors=df.groupby('month')['provincial_case_id'].count()
+print(no_female_male_infectors)
+
+female_infectors=df[df['sex']=='Female']
+female_infectors_count=female_infectors.groupby('age')['provincial_case_id'].count()
+sorted_female_infectors=female_infectors_count.sort_values(ascending=False)
+print(sorted_female_infectors)
+
+olderthan50=df[(df['has_travel_history']=='f') & ((df['age']=='50-59')| (df['age']=='60-69') |(df['age']=='70-79') | (df['age']=='80-89') | (df['age']=='90-100'))]
+month_infector_count=olderthan50.groupby('month')['provincial_case_id'].count()
+sorted_months=month_infector_count.sort_values(ascending=False)
+top_2months=sorted_months.head(2)
+print(top_2months)
+
+#===========================================================================================================================
+
+##question 3
+#3)a)
+df=pd.DataFrame(data)
+df['month']=pd.to_datetime(df['date_report']).dt.month
+no_female_male_infectors=df.groupby('month')['provincial_case_id'].count()
+print(no_female_male_infectors)
+
+female_infectors=df[df['sex']=='Female']
+female_infectors_count=female_infectors.groupby('age')['provincial_case_id'].count()
+sorted_female_infectors=female_infectors_count.sort_values(ascending=False)
+print(sorted_female_infectors)
+
+olderthan50=df[(df['has_travel_history']=='f') & ((df['age']=='50-59')| (df['age']=='60-69') |(df['age']=='70-79') | (df['age']=='80-89') | (df['age']=='90-100'))]
+month_infector_count=olderthan50.groupby('month')['provincial_case_id'].count()
+sorted_months=month_infector_count.sort_values(ascending=False)
+top_2months=sorted_months.head(2)
+print(top_2months)
+
+# Explanation: In this section, you're performing specific analyses based on the provided questions.
+# You're calculating the number of COVID-19 cases per month, focusing on cases by gender and age.
+# Additionally, you're analyzing the age distribution of female infectors and identifying the
+# top 2 months with the highest number of older-than-50 infectors who have a travel history.
+
+# ----------------------------------------------------------------------------------------
+
+#3)b)i,ii,iii
+#top THREE (3) provinces of each month with regards to the total number of COVID-19 cases
+no_ofcases_province=df.groupby('province')['provincial_case_id'].count()
+sorted_provience=no_ofcases_province.sort_values(ascending=False)
+top_3_province=sorted_provience.head(3)
+#print(top_3_province)
+j=0
+for i in sorted_provience:
+    if(j<3):
+        print(i,sorted_provience[i])
+        j+=1
+
+#figure to show the total number of COVID-19 cases for each province.
+no_ofcases_province.plot(kind='bar',color='green')
+plt.title('No of covid cases for each province')
+plt.xlabel('province')
+plt.ylabel('no of covid cases')
+plt.show()
+
+#) figure to describe the age distributions of COVID-19 cases per gender.
+
+province_data=df[df['province']==top_3_province.keys()[0]]
+age_gender_plot=province_data.groupby(['age','sex']).count()
+print(age_gender_plot.plot(kind='bar',xlabel='age',ylabel='no of cases'))
+plt.show()
+
+# Explanation: In this section, you are analyzing COVID-19 cases by province and age.
+# You first identify the top three provinces of each month with the highest total number of cases.
+# Then you create a bar chart to visualize the total number of COVID-19 cases for each province.
+# Finally, you create a stacked bar chart to describe the age distributions of COVID-19 cases per gender
+# for the province with the highest number of cases.
+
+# -----------------------------------------------------------------------------------------------------------------------------------------
+
+#3)c)i,ii,iii
+#update the column ‘report week’ in Dataframe by calling the function
+data['day']=pd.to_datetime(data['report_week']).dt.day
+print(data.head())
+
+
+def get_week(a1):
+    d_name={0:'Mon',1:'Tue',2:'Wed',3:'Thurs',4:'Fri',5:'Sat',6:'Sun'}
+    return d_name[a1]
+    
+day=data['day']
+
+for i in day:
+    a=i%7
+    days=get_week(a)
+    day.replace(to_replace=i,value=days,inplace=True)
+
+data['report_week']=data['day']
+print(day)
+print(data['report_week'])
+
+#List out the top THREE (3) days that COVID-19 cases detected.
+print('top three days that COVID-19 cases detected')
+j=0
+count=dict(data['report_week'].value_counts())
+for i in count:
+    if(j<3):
+        print(i,count[i])
+        j+=1
+#to describe the number of COVID-19 cases per gender for each month.
+data['month']=pd.to_datetime(data['date_report']).dt.month
+print(data['month'])
+
+cases_per_gender=data.groupby(['month','sex']).count()
+print(cases_per_gender)
+
+cases_per_gender.plot(kind='bar',xlabel='Month',ylabel='no.of cases')
+plt.title('COVID-19 Cases Per Gender for Each Month')
+plt.legend(title='Gender')
+plt.show()
+
+# Explanation: In this section, you're analyzing COVID-19 cases by report week and gender.
+# You update the 'report_week' column with day names using a function. Then, you list the top
+# three days when COVID-19 cases were detected. Next, you extract the month from the 'date_report'
+# column and group data by month and gender to count the number of cases. Finally, you plot a bar chart
+# to show the number of COVID-19 cases per gender for each month.
+
+# ----------------------------------------------------------------------------------------
